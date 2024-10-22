@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, ForeignKey, Date, String
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, String
 from sqlalchemy.orm import relationship
 from Utils.database import Base, session
-from datetime import date
+from datetime import datetime
 
 
 class Venta(Base):
@@ -10,7 +10,7 @@ class Venta(Base):
     auto_id = Column(String, ForeignKey('autos.codigo_vin'))
     cliente_id = Column(Integer, ForeignKey('clientes.id'))
     vendedor_id = Column(Integer, ForeignKey('vendedores.id'))
-    fecha_venta = Column(Date, nullable=False)
+    fecha_venta = Column(DateTime, nullable=False)
 
     # Relaciones
     auto = relationship("Auto", back_populates="ventas")
@@ -23,7 +23,7 @@ class Venta(Base):
             auto_id=auto_id,
             cliente_id=cliente_id,
             vendedor_id=vendedor_id,
-            fecha_venta=date.today()
+            fecha_venta=datetime.now()
         )
         try:
             # Agregar la venta a la base de datos

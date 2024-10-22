@@ -3,10 +3,10 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 Base = declarative_base()
 
-# Conexión a la base de datos (en este caso SQLite)
+# Conexión
 engine = create_engine('sqlite:///Utils/autos.db')
 
-# Crear una sesión para interactuar con la base de datos
+#  Sesión para interactuar con la base de datos
 Session = sessionmaker(bind=engine)
 session = Session()
 

@@ -7,6 +7,10 @@ from Models.Servicio import Servicio
 from Utils.database import session
 from Utils.enums import Estado
 from Models.Servicio import Servicio, TipoServicio
+from datetime import date
+from Reports.ventas_report import VentasReport
+from Reports.ingresos_report import IngresosReport
+from Reports.autos_mas_vendidos_report import AutosMasVendidosReport
 
 
 def Main():
@@ -172,6 +176,26 @@ def Main():
         input("Ingrese el ID del cliente para consultar los autos vendidos: "))
     Auto.consultar_autos_vendidos(cliente_id)
     """
+    # Definir el periodo de tiempo
+    fecha_inicio = date(2024, 1, 1)
+    fecha_fin = date(2024, 12, 31)
+
+    # Llamar al reporte
+    ventas = VentasReport.listar_ventas_por_periodo(fecha_inicio, fecha_fin)
+
+    # Imprimir los resultados
+    for venta in ventas:
+        print(
+            f"Venta ID: {venta.id}, Auto: {venta.auto_id}, Fecha: {venta.fecha_venta}")
+
+    # Llamar al reporte
+    ingresos = IngresosReport.reporte_ingresos_totales(fecha_inicio, fecha_fin)
+
+    # Mostrar los resultados
+    print(f"Ingresos por ventas de autos: {ingresos['total_ventas_autos']}")
+    print(f"Ingresos por servicios: {ingresos['total_ingresos_servicios']}")
+
+    AutosMasVendidosReport.reporte_autos_mas_vendidos()
 
 
 if __name__ == "__main__":
