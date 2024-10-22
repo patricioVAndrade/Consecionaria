@@ -5,7 +5,7 @@ from Utils.database import Base
 
 class Vendedor(Base):
     __tablename__ = 'vendedores'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String, nullable=False)
     apellido = Column(String, nullable=False)
     comisiones = Column(Float, nullable=False)
