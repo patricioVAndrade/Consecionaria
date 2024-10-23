@@ -73,7 +73,10 @@ class Servicio(Base):
                 for servicio in servicios:
                     print(
                         f"Tipo: {servicio.tipo_servicio}, Fecha: {servicio.fecha}, Costo: {servicio.costo}")
+                return servicios  # Devuelve la lista de servicios encontrados
             else:
                 print("No se encontraron servicios para el auto especificado.")
+                return []  # Devuelve una lista vacía si no hay servicios
         except Exception as e:
             print(f"Error al consultar los servicios: {e}")
+            return []  # Devuelve una lista vacía en caso de error

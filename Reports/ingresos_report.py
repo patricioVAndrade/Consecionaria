@@ -11,9 +11,14 @@ class IngresosReport:
     @staticmethod
     def reporte_ingresos_totales(fecha_inicio, fecha_fin):
         try:
-            # Sumar los ingresos por ventas de autos (sumando el precio de los autos vendidos)
-            ingresos_autos = session.query(func.sum(Auto.precio).label('total_ventas')).join(Venta).filter(
-                Venta.fecha_venta.between(fecha_inicio, fecha_fin)
+            # Sumar los ingresos por ventas de autos (solo los autos vendidos)
+            ingresos_autos = session.query(func.sum(Auto.precio).label('total_ventas')).join(
+                # Hacemos explícita la relación entre Auto y Venta
+                Venta, Auto.codigo_vin == Venta.auto_id
+            ).filter(
+                Venta.fecha_venta.between(fecha_inicio, fecha_fin),
+                # Asegurarse de que el auto tenga cliente asignado (vendido)
+                Auto.cliente_id.isnot(None)
             ).scalar()
 
             # Sumar los ingresos por servicios

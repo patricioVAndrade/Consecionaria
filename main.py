@@ -11,6 +11,8 @@ from datetime import date
 from Reports.ventas_report import VentasReport
 from Reports.ingresos_report import IngresosReport
 from Reports.autos_mas_vendidos_report import AutosMasVendidosReport
+import customtkinter as ctk
+from Interfaces.main_window import MainWindow
 
 
 def Main():
@@ -176,6 +178,7 @@ def Main():
         input("Ingrese el ID del cliente para consultar los autos vendidos: "))
     Auto.consultar_autos_vendidos(cliente_id)
     """
+    """
     # Definir el periodo de tiempo
     fecha_inicio = date(2024, 1, 1)
     fecha_fin = date(2024, 12, 31)
@@ -196,7 +199,10 @@ def Main():
     print(f"Ingresos por servicios: {ingresos['total_ingresos_servicios']}")
 
     AutosMasVendidosReport.reporte_autos_mas_vendidos()
+    """
 
 
 if __name__ == "__main__":
     Main()
+    app = MainWindow()  # Crear instancia de la ventana principal
+    app.mainloop()

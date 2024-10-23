@@ -29,3 +29,13 @@ class Cliente(Base):
         except IntegrityError:
             session.rollback()
             print(f"Error: el cliente con ID {id} ya existe.")
+
+    @classmethod
+    def obtener_clientes(cls):
+        """Devuelve una lista de todos los clientes registrados."""
+        try:
+            clientes = session.query(cls).all()
+            return [f"{cliente.id} - {cliente.nombre} {cliente.apellido}" for cliente in clientes]
+        except Exception as e:
+            print(f"Error al obtener la lista de clientes: {e}")
+            return []

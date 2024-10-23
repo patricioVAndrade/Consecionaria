@@ -18,7 +18,8 @@ class Venta(Base):
     vendedor = relationship("Vendedor", back_populates="ventas")
 
     @classmethod
-    def registrar_venta(cls, auto_id, cliente_id, vendedor_id):
+    def registrar_venta(cls, auto_id, cliente_id, vendedor_id, comision_fija=500):
+        from Models.Vendedor import Vendedor
         nueva_venta = cls(
             auto_id=auto_id,
             cliente_id=cliente_id,
@@ -26,10 +27,19 @@ class Venta(Base):
             fecha_venta=datetime.now()
         )
         try:
+            # Actualizar comisiones del vendedor
+            vendedor = session.query(Vendedor).filter_by(
+                id=vendedor_id).first()
+            if vendedor:
+                vendedor.comisiones += comision_fija
+            else:
+                print(f"Vendedor con ID {vendedor_id} no encontrado.")
+                return
             # Agregar la venta a la base de datos
             session.add(nueva_venta)
             session.commit()
-            print(f"Venta registrada correctamente para el auto {auto_id}.")
+            print(
+                f"Venta registrada correctamente para el auto {auto_id}. Comisión de {comision_fija} agregada al vendedor.")
         except Exception as e:
             session.rollback()
             print(f"Error al registrar la venta: {str(e)}")
