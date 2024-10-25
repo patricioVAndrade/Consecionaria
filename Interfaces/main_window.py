@@ -13,13 +13,17 @@ from Interfaces.ventas_report_window import VentasReportWindow
 from Utils.database import session
 from Models.Auto import *
 from Models.Venta import *
+from Models.Servicio import *
+from Models.Cliente import *
+from Models.Vendedor import *
+from PIL import Image, ImageTk
 
 
 class MainWindow(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Gestión de Autos")
-        self.geometry("1000x600")
+        self.geometry("1600x700")
 
         # PanedWindow para dividir en dos áreas
         self.paned_window = tk.PanedWindow(self, orient=tk.HORIZONTAL)
@@ -40,16 +44,13 @@ class MainWindow(ctk.CTk):
         self.create_table_selector()
 
         # Tabla que se actualizará
-        self.tree = ttk.Treeview(self.frame_derecha, columns=(
-            "ID", "VIN", "Cliente", "Estado"), show="headings")
-        self.tree.heading("ID", text="ID")
-        self.tree.heading("VIN", text="VIN")
-        self.tree.heading("Cliente", text="Cliente")
-        self.tree.heading("Estado", text="Estado")
+        self.tree = ttk.Treeview(self.frame_derecha, show="headings")
         self.tree.pack(fill=tk.BOTH, expand=True)
 
         # Cargar tabla inicial (autos registrados)
         self.mostrar_tabla("Autos")
+
+        self.agregar_logo()
 
     def create_buttons(self):
         self.label_title = ctk.CTkLabel(
@@ -89,29 +90,74 @@ class MainWindow(ctk.CTk):
             self.frame_derecha, text="Seleccionar Tabla:")
         self.label_select.pack(pady=10)
 
-        self.table_selector = ctk.CTkOptionMenu(self.frame_derecha, values=[
-                                                "Autos", "Ventas", "Clientes", "Servicios"], command=self.mostrar_tabla)
+        # Incluir "Vendedores" en las opciones del selector de tablas
+        self.table_selector = ctk.CTkOptionMenu(
+            self.frame_derecha,
+            values=["Autos", "Ventas", "Clientes", "Servicios", "Vendedores"],
+            command=self.mostrar_tabla
+        )
         self.table_selector.pack(pady=10)
 
     def mostrar_tabla(self, tabla_seleccionada):
-        # Limpiar la tabla actual
-        for item in self.tree.get_children():
-            self.tree.delete(item)
+        # Limpiar configuración previa de la tabla
+        self.tree.delete(*self.tree.get_children())
+        self.tree["columns"] = ()
 
+        # Definir columnas y cargar datos según la tabla seleccionada
         if tabla_seleccionada == "Autos":
-            # Consulta de autos registrados
-            autos = session.query(Auto).all()
-            for auto in autos:
-                self.tree.insert("", tk.END, values=(
-                    auto.codigo_vin, auto.cliente_id, auto.estado))
+            columnas = ("Codigo VIN", "Marca", "Modelo", "Año",
+                        "Precio", "Estado", "Cliente ID")
+            datos = session.query(Auto).all()
+            filas = [(auto.codigo_vin, auto.marca, auto.modelo, auto.anio,
+                      auto.precio, auto.estado.capitalize(), auto.cliente_id if auto.cliente_id is not None else "") for auto in datos]
+
+        elif tabla_seleccionada == "Clientes":
+            columnas = ("ID", "Nombre", "Apellido", "Direccion", "Telefono")
+            datos = session.query(Cliente).all()
+            filas = [(cliente.id, cliente.nombre, cliente.apellido,
+                      cliente.direccion, cliente.telefono) for cliente in datos]
 
         elif tabla_seleccionada == "Ventas":
-            ventas = session.query(Venta).all()
-            for venta in ventas:
-                self.tree.insert("", tk.END, values=(
-                    venta.id, venta.auto_id, venta.cliente_id, venta.fecha_venta))
+            columnas = ("ID", "Auto ID", "Cliente ID",
+                        "Vendedor ID", "Fecha Venta")
+            datos = session.query(Venta).all()
+            filas = [(venta.id, venta.auto_id, venta.cliente_id,
+                      venta.vendedor_id, venta.fecha_venta) for venta in datos]
 
-        # Agregar más opciones de tablas aquí (Clientes, Servicios...)
+        elif tabla_seleccionada == "Servicios":
+            columnas = ("ID", "Auto ID", "Tipo Servicio", "Fecha", "Costo")
+            datos = session.query(Servicio).all()
+            filas = [(servicio.id, servicio.auto_id, servicio.tipo_servicio,
+                      servicio.fecha, servicio.costo) for servicio in datos]
+
+        elif tabla_seleccionada == "Vendedores":
+            columnas = ("ID", "Nombre", "Apellido", "Comisiones")
+            datos = session.query(Vendedor).all()
+            filas = [(vendedor.id, vendedor.nombre, vendedor.apellido,
+                      vendedor.comisiones) for vendedor in datos]
+
+        # Configurar columnas en el Treeview
+        self.tree["columns"] = columnas
+        for col in columnas:
+            self.tree.heading(col, text=col.capitalize())
+            self.tree.column(col, anchor="center")
+
+        # Insertar datos en el Treeview
+        for fila in filas:
+            self.tree.insert("", tk.END, values=fila)
+
+    def agregar_logo(self):
+        # Cargar la imagen del logo
+        logo_image = Image.open("Utils/logo.jpg")  # Ruta de la imagen
+        # Ajustar el tamaño si es necesario
+        logo_image = logo_image.resize((150, 150), Image.Resampling.LANCZOS)
+        logo_photo = ImageTk.PhotoImage(logo_image)
+
+        # Crear un label con la imagen y colocarlo abajo a la izquierda
+        self.label_logo = tk.Label(
+            self.frame_izquierda, image=logo_photo, bg="#2B2B2B")
+        self.label_logo.image = logo_photo  # Necesario para que la imagen no se borre
+        self.label_logo.pack(side=tk.BOTTOM, pady=20)
 
     def abrir_registro_autos(self):
         registro_autos = RegistroAutos()
