@@ -160,19 +160,33 @@ class MainWindow(ctk.CTk):
         self.label_logo.pack(side=tk.BOTTOM, pady=20)
 
     def abrir_registro_autos(self):
-        registro_autos = RegistroAutos()
+        # Actualizar la tabla de autos después de registrar uno nuevo
+        def switch_to_autos():
+            self.mostrar_tabla("Autos") 
+            self.table_selector.set("Autos")
+        registro_autos = RegistroAutos(refresh_callback=switch_to_autos)
         registro_autos.run()
 
     def abrir_registro_clientes(self):
-        registro_clientes = RegistroClientes()
+        # Actualizar la tabla de clientes después de registrar uno nuevo
+        def switch_to_clientes():
+            self.mostrar_tabla("Clientes") 
+            self.table_selector.set("Clientes")
+        registro_clientes = RegistroClientes(refresh_callback=switch_to_clientes)
         registro_clientes.run()
 
     def abrir_registro_ventas(self):
-        registro_ventas = RegistroVentas()
+        def switch_to_ventas():
+            self.mostrar_tabla("Ventas") 
+            self.table_selector.set("Ventas")
+        registro_ventas = RegistroVentas(refresh_callback=switch_to_ventas)
         registro_ventas.run()
 
     def abrir_registro_servicios(self):
-        registro_servicios = RegistroServicios()
+        def switch_to_servicios():
+            self.mostrar_tabla("Servicios") 
+            self.table_selector.set("Servicios")
+        registro_servicios = RegistroServicios(refresh_callback=switch_to_servicios)
         registro_servicios.run()
 
     def abrir_consultas(self):

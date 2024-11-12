@@ -3,7 +3,6 @@ from Interfaces.main_window import MainWindow
 
 
 def Main():
-    # Crear las tablas si no existen
     create_tables()
 
 

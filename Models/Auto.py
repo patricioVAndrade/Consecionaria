@@ -29,6 +29,8 @@ class Auto(Base):
             session.add(nuevo_auto)
             session.commit()
             print(f"Auto {marca} {modelo} registrado correctamente.")
+            autos = session.query(cls).all()
+            return autos
         except IntegrityError:
             session.rollback()
             print(f"Error: el auto con código VIN {codigo_vin} ya existe.")

@@ -4,10 +4,11 @@ from Models.Cliente import Cliente
 
 
 class RegistroClientes(ctk.CTk):
-    def __init__(self):
+    def __init__(self, refresh_callback=None):
         super().__init__()
         self.title("Registrar Clientes")
         self.geometry("300x600")
+        self.refresh_callback = refresh_callback
 
         # Etiquetas y Entradas
         self.label_nombre = ctk.CTkLabel(self, text="Nombre:")
@@ -47,6 +48,9 @@ class RegistroClientes(ctk.CTk):
 
             # Registrar cliente en la base de datos
             Cliente.registrar_cliente(nombre, apellido, direccion, telefono)
+            
+            if self.refresh_callback:
+                self.refresh_callback()
         except Exception as e:
             print(f"Error al guardar el cliente: {e}")
         finally:

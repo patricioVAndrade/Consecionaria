@@ -1,14 +1,15 @@
+# registrar_auto_window.py
 import tkinter as tk
 import customtkinter as ctk
-from Models.Auto import Auto  # Asegúrate de tener importado tu modelo de Auto
-from Utils.enums import Estado  # Asegúrate de importar tu enumeración
-
+from Models.Auto import Auto
+from Utils.enums import Estado
 
 class RegistroAutos(ctk.CTk):
-    def __init__(self):
+    def __init__(self, refresh_callback=None):  # Add callback parameter
         super().__init__()
         self.title("Registrar Autos")
-        self.geometry("300x600")  # Aumenta la altura para acomodar el ComboBox
+        self.geometry("300x600")
+        self.refresh_callback = refresh_callback  # Store the callback
 
         # Etiquetas y Entradas
         self.label_vin = ctk.CTkLabel(self, text="Código VIN:")
@@ -36,13 +37,11 @@ class RegistroAutos(ctk.CTk):
         self.entry_precio = ctk.CTkEntry(self)
         self.entry_precio.pack(pady=5)
 
-        # Agregar ComboBox para el estado
         self.label_estado = ctk.CTkLabel(self, text="Estado:")
         self.label_estado.pack(pady=5)
 
         self.combo_estado = ctk.CTkComboBox(
             self, values=[estado.value for estado in Estado])
-        # Establecer un valor por defecto
         self.combo_estado.set(Estado.nuevo.value)
         self.combo_estado.pack(pady=5)
 
@@ -51,29 +50,28 @@ class RegistroAutos(ctk.CTk):
         self.btn_guardar.pack(pady=20)
 
     def guardar_auto(self):
-        # Deshabilitar el botón para prevenir múltiples clics
         self.btn_guardar.configure(state='disabled')
 
         try:
-            # Capturar datos de las entradas
             vin = self.entry_vin.get()
             marca = self.entry_marca.get()
             modelo = self.entry_modelo.get()
             anio = int(self.entry_anio.get())
             precio = float(self.entry_precio.get())
-            estado = self.combo_estado.get()  # Obtener el estado seleccionado
+            estado = self.combo_estado.get()
 
-            # Registrar auto en la base de datos
-            # Pasar el estado como argumento
             Auto.registrar_auto(vin, marca, modelo, anio, precio, estado)
+            
+            # Call the refresh callback if it exists
+            if self.refresh_callback:
+                self.refresh_callback()
+                
         except Exception as e:
             print(f"Error al guardar el auto: {e}")
         finally:
-            # Rehabilitar el botón después del intento de guardar
             self.btn_guardar.configure(state='normal')
-
-        # Cerrar la ventana después de guardar
-        self.destroy()
+            self.destroy()
 
     def run(self):
         self.mainloop()
+

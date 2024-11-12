@@ -7,10 +7,11 @@ from Models.Venta import Venta
 
 
 class RegistroVentas(ctk.CTk):
-    def __init__(self):
+    def __init__(self,refresh_callback=None):
         super().__init__()
         self.title("Registrar Venta de Auto")
         self.geometry("400x400")
+        self.refersh_callback = refresh_callback
 
         # Etiqueta para seleccionar auto
         self.label_auto = ctk.CTkLabel(self, text="Seleccionar Auto:")
@@ -19,7 +20,7 @@ class RegistroVentas(ctk.CTk):
         # ComboBox para autos disponibles
         self.combo_autos = ctk.CTkComboBox(
             self, values=self.obtener_autos_disponibles())
-        self.combo_autos.pack(pady=5)
+        self.combo_autos.pack(pady=8)
 
         # Etiqueta para seleccionar cliente
         self.label_cliente = ctk.CTkLabel(self, text="Seleccionar Cliente:")
@@ -77,6 +78,9 @@ class RegistroVentas(ctk.CTk):
 
             print(
                 f"Venta del auto {auto_seleccionado} registrada correctamente.")
+            
+            if self.refresh_callback:
+                self.refresh_callback()
         except Exception as e:
             print(f"Error al registrar la venta: {e}")
         finally:

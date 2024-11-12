@@ -5,10 +5,11 @@ from Utils.enums import TipoServicio
 
 
 class RegistroServicios(ctk.CTk):
-    def __init__(self):
+    def __init__(self, refresh_callback=None):
         super().__init__()
         self.title("Registrar Servicio Post-Venta")
         self.geometry("400x400")
+        self.refresh_callback = refresh_callback
 
         # Etiqueta para seleccionar auto
         self.label_auto = ctk.CTkLabel(self, text="Seleccionar Auto Vendido:")
@@ -55,6 +56,9 @@ class RegistroServicios(ctk.CTk):
 
             print(
                 f"Servicio de {tipo_servicio} registrado correctamente para el auto {auto_seleccionado}.")
+            if self.refresh_callback:
+                self.refresh_callback()
+            
         except Exception as e:
             print(f"Error al registrar el servicio: {e}")
         finally:
