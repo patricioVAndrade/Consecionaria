@@ -10,6 +10,7 @@ from Interfaces.registrar_servicio_window import RegistroServicios
 from Interfaces.consultar_auto_vendido_window import ConsultaAutosVendidos
 from Interfaces.consultar_servicio_window import ConsultaServicios
 from Interfaces.ventas_report_window import VentasReportWindow
+from Interfaces.autos_mas_vendidos_window import AutosMasVendidosWindow
 from Utils.database import session
 from Models.Auto import *
 from Models.Venta import *
@@ -84,6 +85,11 @@ class MainWindow(ctk.CTk):
         self.btn_reporte_ventas = ctk.CTkButton(
             self.frame_izquierda, text="Generar Reporte de Ventas", command=self.abrir_reporte_ventas)
         self.btn_reporte_ventas.pack(pady=10)
+        
+        self.btn_reporte_autos_vendidos = ctk.CTkButton(
+            self.frame_izquierda, text="Reporte Autos más Vendidos", 
+            command=self.abrir_reporte_autos_vendidos)
+        self.btn_reporte_autos_vendidos.pack(pady=10)
 
     def create_table_selector(self):
         self.label_select = ctk.CTkLabel(
@@ -200,6 +206,12 @@ class MainWindow(ctk.CTk):
     def abrir_reporte_ventas(self):
         reporte_ventas_window = VentasReportWindow()
         reporte_ventas_window.run()
+        
+        
+    def abrir_reporte_autos_vendidos(self):
+        reporte_window = AutosMasVendidosWindow()
+        reporte_window.run()
+        
 
 
 if __name__ == "__main__":

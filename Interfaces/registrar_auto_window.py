@@ -1,4 +1,3 @@
-# registrar_auto_window.py
 import tkinter as tk
 import customtkinter as ctk
 from Models.Auto import Auto
@@ -16,7 +15,7 @@ class RegistroAutos(ctk.CTk):
         self.label_vin.pack(pady=5)
         self.entry_vin = ctk.CTkEntry(self)
         self.entry_vin.pack(pady=5)
-
+        
         self.label_marca = ctk.CTkLabel(self, text="Marca:")
         self.label_marca.pack(pady=5)
         self.entry_marca = ctk.CTkEntry(self)

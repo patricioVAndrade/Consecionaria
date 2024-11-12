@@ -8,29 +8,47 @@ from sqlalchemy.sql import label
 class AutosMasVendidosReport:
 
     @staticmethod
-    def reporte_autos_mas_vendidos():
+    def obtener_marcas():
         try:
-            # Consulta para contar los autos vendidos por marca (sin diferenciar entre mayúsculas y minúsculas)
-            resultados = session.query(
-                # Convertimos la marca a minúsculas
+            # Consulta para obtener todas las marcas únicas
+            marcas = session.query(
+                func.distinct(func.lower(Auto.marca))
+            ).order_by(
+                func.lower(Auto.marca)
+            ).all()
+            
+            # Convertir el resultado a una lista de strings y agregar "Todas"
+            marcas_list = ["Todas"] + [marca[0].capitalize() for marca in marcas]
+            return marcas_list
+        except Exception as e:
+            print(f"Error al obtener las marcas: {e}")
+            return ["Todas"]
+
+    @staticmethod
+    def reporte_autos_mas_vendidos(marca_seleccionada=None):
+        try:
+            # Consulta base para contar los autos vendidos por marca
+            query = session.query(
                 func.lower(Auto.marca).label('marca'),
                 func.count(Auto.codigo_vin).label('cantidad_vendidos')
-            ).join(Venta).group_by(func.lower(Auto.marca)).order_by(
-                # Ordenamos por cantidad descendente
+            ).join(Venta)
+
+            # Si se seleccionó una marca específica (diferente de "Todas")
+            if marca_seleccionada and marca_seleccionada != "Todas":
+                query = query.filter(
+                    func.lower(Auto.marca) == func.lower(marca_seleccionada)
+                )
+
+            # Agrupar y ordenar los resultados
+            resultados = query.group_by(
+                func.lower(Auto.marca)
+            ).order_by(
                 func.count(Auto.codigo_vin).desc(),
-                # Ordenamos alfabéticamente las marcas si las cantidades son iguales
                 func.lower(Auto.marca).asc()
             ).all()
 
-            # Devolvemos los resultados
-            if resultados:
-                print("Autos más vendidos por marca:")
-                for marca, cantidad in resultados:
-                    print(
-                        f"Marca: {marca.capitalize()}, Cantidad Vendidos: {cantidad}")
-            else:
-                print("No se encontraron ventas de autos.")
+            return resultados if resultados else []
 
         except Exception as e:
-            print(
-                f"Error al generar el reporte de autos más vendidos por marca: {e}")
+            print(f"Error al generar el reporte de autos más vendidos por marca: {e}")
+            return []

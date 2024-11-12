@@ -42,10 +42,8 @@ class DatabaseSingleton:
 
 db = DatabaseSingleton()
 
-#Export these for backward compatibility with existing code
 session = db.session
 engine = db.engine
 
-# Export the create_tables function for backward compatibility
 def create_tables():
     db.create_tables()
