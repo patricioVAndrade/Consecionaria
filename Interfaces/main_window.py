@@ -11,6 +11,7 @@ from Interfaces.consultar_auto_vendido_window import ConsultaAutosVendidos
 from Interfaces.consultar_servicio_window import ConsultaServicios
 from Interfaces.ventas_report_window import VentasReportWindow
 from Interfaces.autos_mas_vendidos_window import AutosMasVendidosWindow
+from Interfaces.ingresos_totales_report import IngresosReportWindow
 from Utils.database import session
 from Models.Auto import *
 from Models.Venta import *
@@ -90,6 +91,12 @@ class MainWindow(ctk.CTk):
             self.frame_izquierda, text="Reporte Autos más Vendidos", 
             command=self.abrir_reporte_autos_vendidos)
         self.btn_reporte_autos_vendidos.pack(pady=10)
+        
+        self.btn_reporte_ingresos = ctk.CTkButton(
+            self.frame_izquierda, 
+            text="Reporte de Ingresos", 
+            command=self.abrir_reporte_ingresos)
+        self.btn_reporte_ingresos.pack(pady=10)
 
     def create_table_selector(self):
         self.label_select = ctk.CTkLabel(
@@ -210,6 +217,10 @@ class MainWindow(ctk.CTk):
         
     def abrir_reporte_autos_vendidos(self):
         reporte_window = AutosMasVendidosWindow()
+        reporte_window.run()
+        
+    def abrir_reporte_ingresos(self):
+        reporte_window = IngresosReportWindow()
         reporte_window.run()
         
 
