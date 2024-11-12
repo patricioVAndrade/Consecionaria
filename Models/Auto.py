@@ -1,8 +1,12 @@
+import re
 from sqlalchemy import Column, String, Integer, Float, Enum, ForeignKey
 from sqlalchemy.orm import relationship
 from Utils.database import Base, session
 from sqlalchemy.exc import IntegrityError
 from Utils.enums import Estado
+from datetime import datetime
+import tkinter as tk
+from tkinter import messagebox
 
 
 class Auto(Base):
@@ -21,20 +25,44 @@ class Auto(Base):
     servicios = relationship("Servicio", back_populates="auto")
     ventas = relationship("Venta", back_populates="auto")
 
+
+    @staticmethod
+    def validar_marca(marca):
+        # Verifica que la marca solo contenga letras y espacios
+        return bool(re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$', marca))
+
     @classmethod
     def registrar_auto(cls, codigo_vin, marca, modelo, anio, precio, estado):
-        nuevo_auto = cls(codigo_vin=codigo_vin, marca=marca,
-                         modelo=modelo, anio=anio, precio=precio, estado=estado)
-        try:
-            session.add(nuevo_auto)
-            session.commit()
-            print(f"Auto {marca} {modelo} registrado correctamente.")
-            autos = session.query(cls).all()
-            return autos
-        except IntegrityError:
-            session.rollback()
-            print(f"Error: el auto con código VIN {codigo_vin} ya existe.")
+        root = tk.Tk()
+        root.withdraw()  # Oculta la ventana principal de tkinter
 
+        # Validación del año
+        if (anio < 1970 or datetime.now().year < anio):
+            messagebox.showerror("Aviso!!", "Fecha inválida, ingrese otra.")
+            root.destroy()
+            return False
+        
+        # Validación de la marca
+        elif not cls.validar_marca(marca):
+            messagebox.showerror("Aviso!!", "La marca solo puede contener letras.")
+            root.destroy()
+            return False
+        
+        else:
+            nuevo_auto = cls(codigo_vin=codigo_vin, marca=marca,
+                           modelo=modelo, anio=anio, precio=precio, estado=estado)
+            try:
+                session.add(nuevo_auto)
+                session.commit()
+                print(f"Auto {marca} {modelo} registrado correctamente.")
+                root.destroy()
+                return True
+            except IntegrityError:
+                session.rollback()
+                print(f"Error: el auto con código VIN {codigo_vin} ya existe.")
+                root.destroy()
+                return False
+        
     @classmethod
     def vender_auto(cls, codigo_vin, cliente_id, vendedor_id, comision_fija=500):
         from Models.Venta import Venta
